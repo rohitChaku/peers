@@ -43,8 +43,6 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
-import java.util.Objects;
-
 public class InitialRequestManager extends RequestManager
         implements ServerTransactionUser {
 
@@ -272,9 +270,8 @@ public class InitialRequestManager extends RequestManager
         //etc.
         
         if (sipResponse != null) {
-            SipHeaderFieldValue viaHeader = sipRequest.getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_VIA));
             String transport = RFC3261.TRANSPORT_UDP;
-            if (Objects.nonNull(viaHeader) && viaHeader.getValue().contains(RFC3261.TRANSPORT_TCP)) {
+            if (userAgent.getConfig().getDomain().contains(RFC3261.TRANSPORT_TCP)) {
                 transport = RFC3261.TRANSPORT_TCP;
             }
             ServerTransaction serverTransaction =

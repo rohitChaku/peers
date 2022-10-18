@@ -21,10 +21,12 @@ package net.sourceforge.peers.sip.core.useragent;
 
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.syntaxencoding.*;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
@@ -67,9 +69,8 @@ public class UAS implements SipServerTransportUser {
         this.dialogManager = dialogManager;
         transportManager.setSipServerTransportUser(this);
         if (userAgent.getConfig().isServerStart()) {
-            String domain = userAgent.getConfig().getDomain();
             String transport = RFC3261.TRANSPORT_UDP;
-            if (domain.contains(RFC3261.TRANSPORT_TCP)) {
+            if (userAgent.getConfig().getDomain().contains(RFC3261.TRANSPORT_TCP)) {
                 transport = RFC3261.TRANSPORT_TCP;
             }
             transportManager.createServerTransport(transport, userAgent.getConfig().getSipPort());

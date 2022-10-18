@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
-import java.util.Objects;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaManager;
@@ -96,9 +95,8 @@ public class InviteHandler extends DialogMethodHandler
                 RFC3261.CODE_180_RINGING, RFC3261.REASON_180_RINGING);
         Dialog dialog = buildDialogForUas(sipResponse, sipRequest);
         //here dialog is already stored in dialogs in DialogManager
-        SipHeaderFieldValue viaHeader = sipRequest.getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_VIA));
         String transport = RFC3261.TRANSPORT_UDP;
-        if (Objects.nonNull(viaHeader) && viaHeader.getValue().contains(RFC3261.TRANSPORT_TCP)) {
+        if (userAgent.getConfig().getDomain().contains(RFC3261.TRANSPORT_TCP)) {
             transport = RFC3261.TRANSPORT_TCP;
         }
         InviteServerTransaction inviteServerTransaction = (InviteServerTransaction)
