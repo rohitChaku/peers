@@ -27,9 +27,10 @@ import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
+import java.util.Objects;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaManager;
@@ -95,10 +96,14 @@ public class InviteHandler extends DialogMethodHandler
                 RFC3261.CODE_180_RINGING, RFC3261.REASON_180_RINGING);
         Dialog dialog = buildDialogForUas(sipResponse, sipRequest);
         //here dialog is already stored in dialogs in DialogManager
-        
+        SipHeaderFieldValue viaHeader = sipRequest.getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_VIA));
+        String transport = RFC3261.TRANSPORT_UDP;
+        if (Objects.nonNull(viaHeader) && viaHeader.getValue().contains(RFC3261.TRANSPORT_TCP)) {
+            transport = RFC3261.TRANSPORT_TCP;
+        }
         InviteServerTransaction inviteServerTransaction = (InviteServerTransaction)
             transactionManager.createServerTransaction(sipResponse,
-                    userAgent.getSipPort(), RFC3261.TRANSPORT_UDP, this,
+                    userAgent.getSipPort(), transport, this,
                     sipRequest);
         
         inviteServerTransaction.start();
@@ -109,7 +114,7 @@ public class InviteHandler extends DialogMethodHandler
         inviteServerTransaction.sendReponse(sipResponse);
 
         dialog.receivedOrSent1xx();
-
+        acceptCall(sipRequest, dialog);
         SipListener sipListener = userAgent.getSipListener();
         if (sipListener != null) {
             sipListener.incomingCall(sipRequest, sipResponse);
@@ -351,7 +356,7 @@ public class InviteHandler extends DialogMethodHandler
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
 
         String transport = RFC3261.TRANSPORT_UDP;
-        Hashtable<String, String> params = destinationUri.getUriParameters();
+        HashMap<String, String> params = destinationUri.getUriParameters();
         if (params != null) {
             String reqUriTransport = params.get(RFC3261.PARAM_TRANSPORT);
             if (reqUriTransport != null) {
@@ -359,9 +364,6 @@ public class InviteHandler extends DialogMethodHandler
             }
         }
         int port = destinationUri.getPort();
-        if (port == SipURI.DEFAULT_PORT) {
-            port = RFC3261.TRANSPORT_DEFAULT_PORT;
-        }
         SipURI sipUri = userAgent.getConfig().getOutboundProxy();
         if (sipUri == null) {
             sipUri = destinationUri;
@@ -590,7 +592,7 @@ public class InviteHandler extends DialogMethodHandler
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
         
         String transport = RFC3261.TRANSPORT_UDP;
-        Hashtable<String, String> params = destinationUri.getUriParameters();
+        HashMap<String, String> params = destinationUri.getUriParameters();
         if (params != null) {
             String reqUriTransport = params.get(RFC3261.PARAM_TRANSPORT);
             if (reqUriTransport != null) {
@@ -598,9 +600,6 @@ public class InviteHandler extends DialogMethodHandler
             }
         }
         int port = destinationUri.getPort();
-        if (port == SipURI.DEFAULT_PORT) {
-            port = RFC3261.TRANSPORT_DEFAULT_PORT;
-        }
 
         SipURI sipUri = userAgent.getConfig().getOutboundProxy();
         if (sipUri == null) {

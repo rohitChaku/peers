@@ -21,7 +21,7 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -81,12 +81,9 @@ public class RegisterHandler extends MethodHandler
         SipURI destinationUri = RequestManager.getDestinationUri(sipRequest,
                 logger);
         int port = destinationUri.getPort();
-        if (port == SipURI.DEFAULT_PORT) {
-            port = RFC3261.TRANSPORT_DEFAULT_PORT;
-        }
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
         String transport = RFC3261.TRANSPORT_UDP;
-        Hashtable<String, String> params = destinationUri.getUriParameters();
+        HashMap<String, String> params = destinationUri.getUriParameters();
         if (params != null) {
             String reqUriTransport = params.get(RFC3261.PARAM_TRANSPORT);
             if (reqUriTransport != null) {

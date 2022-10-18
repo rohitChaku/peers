@@ -48,8 +48,8 @@ public class TransactionManager {
     
     public TransactionManager(Logger logger) {
         this.logger = logger;
-        clientTransactions = new HashMap<String, ClientTransaction>();
-        serverTransactions = new HashMap<String, ServerTransaction>();
+        clientTransactions = new HashMap<>();
+        serverTransactions = new HashMap<>();
         timer = new Timer(TransactionManager.class.getSimpleName()
                 + " " + Timer.class.getSimpleName());
     }

@@ -19,7 +19,7 @@
 
 package net.sourceforge.peers.sip.syntaxencoding;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import net.sourceforge.peers.sip.RFC3261;
 
@@ -39,7 +39,7 @@ public class SipURI {
     /**
      * Use empty strings in value if the parameter has no value
      */
-    private Hashtable<String, String> uriParameters;
+    private HashMap<String, String> uriParameters;
     //headers not implemented
     //private Hashtable<String, String> headers;
 
@@ -87,7 +87,7 @@ public class SipURI {
         if (buf.length() <= 0) {
             return;
         }
-        uriParameters = new Hashtable<String, String>();
+        uriParameters = new HashMap<String, String>();
         while (buf.length() > 0) {
             buf.deleteCharAt(0);//delete the first ';'
             int nextSemicolon = buf.indexOf(";");
@@ -101,12 +101,7 @@ public class SipURI {
             if (nextEquals > nextSemicolon) {
                 nextEquals = nextSemicolon;
             }
-            int afterEquals;
-            if (nextEquals + 1 > nextSemicolon) {
-                afterEquals = nextSemicolon;
-            } else {
-                afterEquals = nextEquals + 1;
-            }
+            int afterEquals = Math.min(nextEquals + 1, nextSemicolon);
             uriParameters.put(buf.substring(0, nextEquals), buf.substring(afterEquals, nextSemicolon));
             buf.delete(0, nextSemicolon);
         }
@@ -122,10 +117,13 @@ public class SipURI {
     }
 
     public int getPort() {
+        if (port == DEFAULT_PORT) {
+            return RFC3261.TRANSPORT_DEFAULT_PORT;
+        }
         return port;
     }
 
-    public Hashtable<String, String> getUriParameters() {
+    public HashMap<String, String> getUriParameters() {
         return uriParameters;
     }
 

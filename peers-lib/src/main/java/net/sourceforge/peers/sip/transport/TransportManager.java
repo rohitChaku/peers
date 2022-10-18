@@ -38,6 +38,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.Socket;
+import java.net.ServerSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -83,9 +84,9 @@ public class TransportManager {
     public TransportManager(TransactionManager transactionManager,
             Config config, Logger logger) {
         sipParser = new SipParser();
-        closableSockets = new HashMap<SipTransportConnection, Closeable>();
-        messageSenders = new HashMap<SipTransportConnection, MessageSender>();
-        messageReceivers = new HashMap<SipTransportConnection, MessageReceiver>();
+        closableSockets = new HashMap<>();
+        messageSenders = new HashMap<>();
+        messageReceivers = new HashMap<>();
         this.transactionManager = transactionManager;
         this.config = config;
         this.logger = logger;
@@ -102,7 +103,7 @@ public class TransportManager {
             InetAddress inetAddress, int port, String transport, int ttl)
                 throws IOException {
         //18.1
-        
+
         //via created by transaction layer to add branchid
         SipHeaderFieldValue via = Utils.getTopVia(sipRequest);
         StringBuilder buf = new StringBuilder(DEFAULT_SIP_VERSION);
@@ -171,7 +172,6 @@ public class TransportManager {
         SipTransportConnection conn = new SipTransportConnection(
                     config.getLocalInetAddress(), port, null,
                     SipTransportConnection.EMPTY_PORT, transportType);
-        
         MessageReceiver messageReceiver = messageReceivers.get(conn);
         if (messageReceiver == null) {
             messageReceiver = createMessageReceiver(conn);
@@ -186,7 +186,7 @@ public class TransportManager {
         //18.2.2
         SipHeaderFieldValue topVia = Utils.getTopVia(sipResponse);
         String topViaValue = topVia.getValue();
-        StringBuffer buf = new StringBuffer(topViaValue);
+        StringBuilder buf = new StringBuilder(topViaValue);
         String hostport = null;
         int i = topViaValue.length() - 1;
         while (i > 0) {
@@ -245,54 +245,22 @@ public class TransportManager {
             return;
         }
         
-        //actual sending
-        
-        //TODO manage maddr parameter in top via for multicast
-        if (buf.indexOf(TRANSPORT_TCP) > -1) {
-//            Socket socket = (Socket)factory.connections.get(connection);
-//            if (!socket.isClosed()) {
-//                try {
-//                    socket.getOutputStream().write(data);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    return;
-//                    //TODO
-//                }
-//            } else {
-//                try {
-//                    socket = new Socket(host, port);
-//                    factory.connections.put(connection, socket);
-//                    socket.getOutputStream().write(data);
-//                } catch (IOException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                    /*
-//                     * TODO
-//                     * If connection attempt fails, use the procedures in RFC3263
-//                     * for servers in order to determine the IP address and
-//                     * port to open the connection and send the response to.
-//                     */
-//                    return;
-//                }
-//            }
-        } else {
-            MessageSender messageSender = messageSenders.get(connection);
-            if (messageSender == null) {
-                messageSender = createMessageSender(connection);
-            }
-            //add contact header
-            SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
-            SipHeaders respHeaders = sipResponse.getSipHeaders();
-            StringBuffer contactBuf = new StringBuffer();
-            contactBuf.append(RFC3261.LEFT_ANGLE_BRACKET);
-            contactBuf.append(RFC3261.SIP_SCHEME);
-            contactBuf.append(RFC3261.SCHEME_SEPARATOR);
-            contactBuf.append(messageSender.getContact());
-            contactBuf.append(RFC3261.RIGHT_ANGLE_BRACKET);
-            respHeaders.add(contactName, new SipHeaderFieldValue(contactBuf.toString()));
-            messageSender.sendMessage(sipResponse);
-
+        //actual sending - same for TCP/UDP
+        MessageSender messageSender = messageSenders.get(connection);
+        if (messageSender == null) {
+            messageSender = createMessageSender(connection);
         }
+        //add contact header
+        SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
+        SipHeaders respHeaders = sipResponse.getSipHeaders();
+        StringBuffer contactBuf = new StringBuffer();
+        contactBuf.append(RFC3261.LEFT_ANGLE_BRACKET);
+        contactBuf.append(RFC3261.SIP_SCHEME);
+        contactBuf.append(RFC3261.SCHEME_SEPARATOR);
+        contactBuf.append(messageSender.getContact());
+        contactBuf.append(RFC3261.RIGHT_ANGLE_BRACKET);
+        respHeaders.add(contactName, new SipHeaderFieldValue(contactBuf.toString()));
+        messageSender.sendMessage(sipResponse);
     }
     
     private MessageSender createMessageSender(final SipTransportConnection conn)
@@ -447,18 +415,18 @@ public class TransportManager {
                     transactionManager, this, config, logger);
             messageReceiver.setSipServerTransportUser(sipServerTransportUser);
         } else {
-            Socket regularSocket = (Socket) closableSockets.get(conn);
+            ServerSocket regularSocket = (ServerSocket) closableSockets.get(conn);
             if (regularSocket == null) {
-                logger.debug("new Socket(" + conn.getLocalPort()
+                logger.debug("new ServerSocket(" + conn.getLocalPort()
                         + ", " + conn.getLocalInetAddress());
                 // AccessController.doPrivileged added for plugin compatibility
                 regularSocket = AccessController.doPrivileged(
-                        new PrivilegedAction<Socket>() {
+                        new PrivilegedAction<ServerSocket>() {
                             @Override
-                            public Socket run() {
+                            public ServerSocket run() {
                                 try {
-                                    return new Socket(conn.getLocalInetAddress(),
-                                            conn.getLocalPort());
+                                    new Socket(conn.getLocalInetAddress(), conn.getLocalPort());
+                                    return new ServerSocket(conn.getLocalPort(), 0, conn.getLocalInetAddress());
                                 } catch (IOException e) {
                                     logger.error("cannot create socket", e);
                                 } catch (SecurityException e) {
@@ -482,7 +450,7 @@ public class TransportManager {
                 closableSockets.put(sipTransportConnection, regularSocket);
                 logger.info("added standard socket receiver " + sipTransportConnection);
             }
-            messageReceiver = new TcpMessageReceiver(regularSocket,
+            messageReceiver = new TcpServerMessageReceiver(regularSocket,
                     transactionManager, this, config, logger);
             messageReceiver.setSipServerTransportUser(sipServerTransportUser);
         }

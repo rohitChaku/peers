@@ -19,7 +19,7 @@
 
 package net.sourceforge.peers.sip.syntaxencoding;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import org.testng.annotations.Test;
 
@@ -44,7 +44,7 @@ public class SipURITestNG {
     public void testSipUri3() throws SipUriSyntaxException {
         SipURI sipUri = new SipURI("sip:atlanta.com;a");
         assert "atlanta.com".equals(sipUri.getHost());
-        Hashtable<String, String> params = sipUri.getUriParameters();
+        HashMap<String, String> params = sipUri.getUriParameters();
         assert params != null;
         assert 1 == params.size();
         assert params.containsKey("a");
@@ -56,7 +56,7 @@ public class SipURITestNG {
         SipURI sipUri = new SipURI("sip:alice@atlanta.com;a;br=3");
         assert "alice".equals(sipUri.getUserinfo());
         assert "atlanta.com".equals(sipUri.getHost());
-        Hashtable<String, String> params = sipUri.getUriParameters();
+        HashMap<String, String> params = sipUri.getUriParameters();
         assert params != null;
         assert 2 == params.size();
         assert params.containsKey("a");
@@ -70,7 +70,7 @@ public class SipURITestNG {
         SipURI sipUri = new SipURI("sip:alice@atlanta.com;br=3;a");
         assert "alice".equals(sipUri.getUserinfo());
         assert "atlanta.com".equals(sipUri.getHost());
-        Hashtable<String, String> params = sipUri.getUriParameters();
+        HashMap<String, String> params = sipUri.getUriParameters();
         assert params != null;
         assert 2 == params.size();
         assert params.containsKey("a");
@@ -92,7 +92,7 @@ public class SipURITestNG {
         assert "alice".equals(sipUri.getUserinfo());
         assert "atlanta.com".equals(sipUri.getHost());
         assert 5060 == sipUri.getPort();
-        Hashtable<String, String> params = sipUri.getUriParameters();
+        HashMap<String, String> params = sipUri.getUriParameters();
         assert params != null;
         assert 3 == params.size();
         assert params.containsKey("transport");
