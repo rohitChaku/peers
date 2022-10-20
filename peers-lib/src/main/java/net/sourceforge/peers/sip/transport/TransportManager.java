@@ -284,6 +284,9 @@ public class TransportManager {
                         @Override
                         public DatagramSocket run() {
                             try {
+                                if (conn.getLocalInetAddress().equals(conn.getRemoteInetAddress())) {
+                                    return new DatagramSocket(conn.getLocalPort(), conn.getLocalInetAddress());
+                                }
                                 return new DatagramSocket(conn.getLocalPort());
                             } catch (SocketException e) {
                                 logger.error("cannot create socket", e);

@@ -69,7 +69,7 @@ public class XmlConfig implements Config {
     private String authorizationUsername;
     private boolean microPhoneEnable;
     private String dialUri;
-    private boolean serverStart;
+    private boolean startServer;
 
     // corresponding DOM nodes
 
@@ -84,7 +84,7 @@ public class XmlConfig implements Config {
     private Node mediaFileNode;
     private Node rtpPortNode;
     private Node authUserNode;
-    private Node serverStartNode;
+    private Node startServerNode;
     private Node microPhoneEnableNode;
     private Node dialUriNode;
 
@@ -196,11 +196,11 @@ public class XmlConfig implements Config {
                         + " rtp port must be even");
             }
         }
-        serverStartNode = getFirstChild(documentElement, "serverStart");
-        if (isNullOrEmpty(serverStartNode)) {
-            serverStart = false;
+        startServerNode = getFirstChild(documentElement, "startServer");
+        if (isNullOrEmpty(startServerNode)) {
+            startServer = false;
         } else {
-            serverStart = Boolean.parseBoolean(serverStartNode.getTextContent());
+            startServer = Boolean.parseBoolean(startServerNode.getTextContent());
         }
         microPhoneEnableNode = getFirstChild(documentElement, "microPhoneEnable");
         if (isNullOrEmpty(microPhoneEnableNode)) {
@@ -328,8 +328,8 @@ public class XmlConfig implements Config {
     }
 
     @Override
-    public boolean isServerStart() {
-        return serverStart;
+    public boolean getStartServer() {
+        return startServer;
     }
 
     @Override
@@ -413,9 +413,9 @@ public class XmlConfig implements Config {
     }
 
     @Override
-    public void setServerStart(boolean serverStart) {
-        this.serverStart = serverStart;
-        serverStartNode.setTextContent(Boolean.toString(serverStart));
+    public void setStartServer(boolean startServer) {
+        this.startServer = startServer;
+        startServerNode.setTextContent(Boolean.toString(startServer));
     }
 
     @Override

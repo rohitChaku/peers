@@ -38,7 +38,7 @@ public class JavaConfig implements Config {
     private String mediaFile;
     private int rtpPort;
     private String authorizationUsername;
-    private boolean serverStart;
+    private boolean startServer;
     private boolean microPhoneEnable;
     private String dialUri;
 
@@ -112,8 +112,8 @@ public class JavaConfig implements Config {
     }
 
     @Override
-    public boolean isServerStart() {
-        return serverStart;
+    public boolean getStartServer() {
+        return startServer;
     }
 
     @Override
@@ -171,8 +171,9 @@ public class JavaConfig implements Config {
     }
 
     @Override
-    public void setServerStart(boolean serverStart) {
-        this.serverStart = serverStart;
+    public void setStartServer(boolean startServer) {
+        System.out.println(startServer);
+        this.startServer = startServer;
     }
 
     @Override

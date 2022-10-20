@@ -504,11 +504,6 @@ public class InviteHandler extends DialogMethodHandler
         
         challenged = false;
         
-        
-        
-        
-        
-        
         //13.2.2.4
 
         List<String> peers = userAgent.getPeers();

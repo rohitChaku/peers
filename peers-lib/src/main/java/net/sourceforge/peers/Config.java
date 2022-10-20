@@ -41,7 +41,7 @@ public interface Config {
     public String getMediaFile();
     public int getRtpPort();
     public String getAuthorizationUsername();
-    public boolean isServerStart();
+    public boolean getStartServer();
     public void setLocalInetAddress(InetAddress inetAddress);
     public void setPublicInetAddress(InetAddress inetAddress);
     public void setUserPart(String userPart);
@@ -54,7 +54,7 @@ public interface Config {
     public void setMediaFile(String mediaFile);
     public void setRtpPort(int rtpPort);
     public void setAuthorizationUsername(String authorizationUsername);
-    public void setServerStart(boolean serverStart);
+    public void setStartServer(boolean startServer);
     public String getDialUri();
     public void setDialUri(String dialUri);
 }

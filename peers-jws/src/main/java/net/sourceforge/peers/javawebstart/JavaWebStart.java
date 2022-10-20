@@ -19,11 +19,6 @@
 
 package net.sourceforge.peers.javawebstart;
 
-import net.sourceforge.peers.sip.Utils;
-import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
-import net.sourceforge.peers.sip.transport.SipRequest;
-
-import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static net.sourceforge.peers.sip.Utils.DEFAULT_PEERS_HOME;
+import static net.sourceforge.peers.sip.Utils.PEERSHOME_SYSTEM_PROPERTY;
 
 public class JavaWebStart {
 
@@ -70,23 +66,31 @@ public class JavaWebStart {
     public static void main(final String[] args) {
         CloseProgramme closeProgramme = new CloseProgramme(300_000L); // 5 minutes
         closeProgramme.start();
-        String peersDir = "peers";
         String home = System.getProperty("user.home", DEFAULT_PEERS_HOME);
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-        String peersHome = home + File.separator + peersDir + File.separator
-            + format.format(new Date());
+        String peersDir = System.getProperty(PEERSHOME_SYSTEM_PROPERTY, null);
+        if (peersDir == null) {
+            peersDir = "peers";
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            String peersHome = home + File.separator + peersDir + File.separator
+                    + format.format(new Date());
 
-        createDirectory(peersHome + File.separator + "conf");
-        createDirectory(peersHome + File.separator + "logs");
-        createDirectory(peersHome + File.separator + "media");
+            createDirectory(peersHome + File.separator + "conf");
+            createDirectory(peersHome + File.separator + "logs");
+            createDirectory(peersHome + File.separator + "media");
 
-        copyFile("conf/peers.xml", peersHome + File.separator + "conf"
-                + File.separator + "peers.xml");
-        copyFile("conf/peers.xsd", peersHome + File.separator + "conf"
-                + File.separator + "peers.xsd");
-        String peersPath = new File(peersHome).getAbsolutePath();
-        final String[] args2 = {peersPath};
-        new RegisterSIPClient(args2);
+            copyFile("conf/peers.xml", peersHome + File.separator + "conf"
+                    + File.separator + "peers.xml");
+            copyFile("conf/peers.xsd", peersHome + File.separator + "conf"
+                    + File.separator + "peers.xsd");
+            String peersPath = new File(peersHome).getAbsolutePath();
+            final String[] args2 = {peersPath};
+            new RegisterSIPClient(args2);
+        } else {
+            // TODO: system property for multiple user agents
+            String peersPath = new File(peersDir).getAbsolutePath();
+            final String[] args2 = {peersPath};
+            new RegisterSIPClient(args2);
+        }
     }
     
     private static void createDirectory(String dir) {

@@ -36,7 +36,7 @@
   <password>xxxx</password>
   <!-- you can specify an outbound proxy for registration and calls -->
   <!-- Example: sip:192.168.1.20;lr -->
-  <outboundProxy></outboundProxy>
+  <outboundProxy/>
   <!-- you can specify the sip listening port you want, 0 can be used to
        choose a random free port -->
   <!-- Example: 5060 -->
@@ -46,7 +46,7 @@
   <rtpPort>0</rtpPort>
   <!-- if you need to specify an authorization username different than
        the userPart, if empty will default to what is specified in userPart -->
-  <authorizationUsername></authorizationUsername>
+  <authorizationUsername/>
   <!-- mediaMode corresponds to the way media is managed. Three values are
        possible for this parameter:
          - captureAndPlayback: capture sound from microphone, send
@@ -66,8 +66,8 @@
        file with the following format: linear PCM 8kHz, 16 bits signed,
        mono-channel, little endian.  -->
   <!-- Example: media/message.raw -->
-  <mediaFile></mediaFile>
+  <mediaFile/>
   <startServer>false</startServer>
   <microPhoneEnable>false</microPhoneEnable>
-  <dialUri></dialUri>>
+  <dialUri/>
 </peers>
