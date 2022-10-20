@@ -19,13 +19,6 @@
 
 package net.sourceforge.peers.sip.transport;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
@@ -36,6 +29,9 @@ import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
+
+import java.io.*;
+import java.net.InetAddress;
 
 public abstract class MessageReceiver implements Runnable {
 
@@ -118,6 +114,7 @@ public abstract class MessageReceiver implements Runnable {
         StringBuffer direction = new StringBuffer();
         direction.append("RECEIVED from ").append(sourceIp.getHostAddress());
         direction.append("/").append(sourcePort);
+        //System.out.println("Message: \n" + new String(message));
         logger.traceNetwork(new String(message),
                 direction.toString());
         SipMessage sipMessage = null;
@@ -136,7 +133,7 @@ public abstract class MessageReceiver implements Runnable {
         // RFC3261 18.2
 
         if (sipMessage instanceof SipRequest) {
-            SipRequest sipRequest = (SipRequest)sipMessage;
+            SipRequest sipRequest = (SipRequest) sipMessage;
             
             
             SipHeaderFieldValue topVia = Utils.getTopVia(sipRequest);
@@ -173,7 +170,10 @@ public abstract class MessageReceiver implements Runnable {
                 serverTransaction.receivedRequest(sipRequest);
             }
         } else {
-            SipResponse sipResponse = (SipResponse)sipMessage;
+            SipResponse sipResponse = (SipResponse) sipMessage;
+//            if (sipResponse.getMethod() == RFC3261.METHOD_INVITE) {
+//                System.out.println("Invite");
+//            }
             ClientTransaction clientTransaction =
                 transactionManager.getClientTransaction(sipResponse);
             logger.debug("ClientTransaction = " + clientTransaction);

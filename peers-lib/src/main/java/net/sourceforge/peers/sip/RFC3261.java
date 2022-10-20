@@ -33,7 +33,7 @@ public final class RFC3261 {
     public static final String METHOD_BYE      = "BYE";
     public static final String METHOD_OPTIONS  = "OPTIONS";
     public static final String METHOD_CANCEL   = "CANCEL";
-    
+
         //Classical form
     
     public static final String HDR_ALLOW               = "Allow";
@@ -54,6 +54,7 @@ public final class RFC3261 {
     public static final String HDR_SUBJECT             = "Subject";
     public static final String HDR_SUPPORTED           = "Supported";
     public static final String HDR_TO                  = "To";
+    public static final String HDR_USER_AGENT          = "User-Agent";
     public static final String HDR_VIA                 = "Via";
     public static final String HDR_WWW_AUTHENTICATE    = "WWW-Authenticate";
     
@@ -116,6 +117,7 @@ public final class RFC3261 {
     
       //REASON PHRASES
     public static final String REASON_180_RINGING  = "Ringing";
+    public static final String REASON_100_RINGING  = "Trying";
     public static final String REASON_200_OK       = "OK";
     public static final String REASON_405_METHOD_NOT_ALLOWED =
         "Method Not Allowed";
@@ -157,15 +159,13 @@ public final class RFC3261 {
     public static final int TIMER_T1 = 500;
     public static final int TIMER_T2 = 4000;
     public static final int TIMER_T4 = 5000;
+    public static final int TCP_SOCKET_TIMEOUT = 30000;
     public static final int TIMER_INVITE_CLIENT_TRANSACTION = 32000;
- 
-    
-    //TRANSACTION USER
-    
     
     //CORE
     
     public static final String CONTENT_TYPE_SDP = "application/sdp";
     public static final int DEFAULT_EXPIRES = 3600;
+    public static final String USER_AGENT = "PEERS v0.0.1";
     
 }

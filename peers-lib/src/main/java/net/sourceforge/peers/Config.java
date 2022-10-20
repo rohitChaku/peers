@@ -19,10 +19,10 @@
 
 package net.sourceforge.peers;
 
-import java.net.InetAddress;
-
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
+
+import java.net.InetAddress;
 
 public interface Config {
 
@@ -36,9 +36,12 @@ public interface Config {
     public int getSipPort();
     public MediaMode getMediaMode();
     public boolean isMediaDebug();
+    public void setMicroPhoneEnable(boolean microPhoneEnable);
+    public boolean isMicroPhoneEnable();
     public String getMediaFile();
     public int getRtpPort();
     public String getAuthorizationUsername();
+    public boolean getStartServer();
     public void setLocalInetAddress(InetAddress inetAddress);
     public void setPublicInetAddress(InetAddress inetAddress);
     public void setUserPart(String userPart);
@@ -51,5 +54,7 @@ public interface Config {
     public void setMediaFile(String mediaFile);
     public void setRtpPort(int rtpPort);
     public void setAuthorizationUsername(String authorizationUsername);
-
+    public void setStartServer(boolean startServer);
+    public String getDialUri();
+    public void setDialUri(String dialUri);
 }

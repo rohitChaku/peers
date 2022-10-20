@@ -79,7 +79,6 @@ public class MidDialogRequestManager extends RequestManager
 
     public void generateMidDialogRequest(Dialog dialog,
             String method, MessageInterceptor messageInterceptor) {
-        
 
         SipRequest sipRequest = dialog.buildSubsequentRequest(RFC3261.METHOD_BYE);
 
@@ -101,7 +100,6 @@ public class MidDialogRequestManager extends RequestManager
             //TODO client transaction user is managed by invite handler directly
         }
 
-        
     }
     
     

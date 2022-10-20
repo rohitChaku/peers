@@ -19,11 +19,15 @@
 
 package net.sourceforge.peers;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.syntaxencoding.SipURI;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,17 +38,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import net.sourceforge.peers.media.MediaMode;
-import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.syntaxencoding.SipURI;
-import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 public class XmlConfig implements Config {
@@ -69,9 +67,12 @@ public class XmlConfig implements Config {
     private String mediaFile;
     private int rtpPort;
     private String authorizationUsername;
-    
+    private boolean microPhoneEnable;
+    private String dialUri;
+    private boolean startServer;
+
     // corresponding DOM nodes
-    
+
     private Node ipAddressNode;
     private Node userPartNode;
     private Node domainNode;
@@ -83,6 +84,9 @@ public class XmlConfig implements Config {
     private Node mediaFileNode;
     private Node rtpPortNode;
     private Node authUserNode;
+    private Node startServerNode;
+    private Node microPhoneEnableNode;
+    private Node dialUriNode;
 
     // non-persistent variables
 
@@ -97,7 +101,7 @@ public class XmlConfig implements Config {
             return;
         }
         DocumentBuilderFactory documentBuilderFactory =
-            DocumentBuilderFactory.newInstance();
+                DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder;
         try {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -191,6 +195,24 @@ public class XmlConfig implements Config {
                 logger.error("rtp port provided is " + rtpPort
                         + " rtp port must be even");
             }
+        }
+        startServerNode = getFirstChild(documentElement, "startServer");
+        if (isNullOrEmpty(startServerNode)) {
+            startServer = false;
+        } else {
+            startServer = Boolean.parseBoolean(startServerNode.getTextContent());
+        }
+        microPhoneEnableNode = getFirstChild(documentElement, "microPhoneEnable");
+        if (isNullOrEmpty(microPhoneEnableNode)) {
+            microPhoneEnable = false;
+        } else {
+            microPhoneEnable = Boolean.parseBoolean(microPhoneEnableNode.getTextContent());
+        }
+        dialUriNode = getFirstChild(documentElement, "dialUri");
+        if (isNullOrEmpty(dialUriNode)) {
+            dialUri = null;
+        } else {
+            dialUri = dialUriNode.getTextContent();
         }
     }
 
@@ -286,6 +308,16 @@ public class XmlConfig implements Config {
     }
 
     @Override
+    public void setMicroPhoneEnable(boolean microPhoneEnable) {
+        this.microPhoneEnable = microPhoneEnable;
+    }
+
+    @Override
+    public boolean isMicroPhoneEnable() {
+        return microPhoneEnable;
+    }
+
+    @Override
     public int getRtpPort() {
         return rtpPort;
     }
@@ -293,6 +325,11 @@ public class XmlConfig implements Config {
     @Override
     public String getAuthorizationUsername() {
         return authorizationUsername;
+    }
+
+    @Override
+    public boolean getStartServer() {
+        return startServer;
     }
 
     @Override
@@ -332,7 +369,7 @@ public class XmlConfig implements Config {
         } else {
             outboundProxyNode.setTextContent(outboundProxy.toString());
         }
-        
+
     }
 
     @Override
@@ -375,4 +412,19 @@ public class XmlConfig implements Config {
         this.mediaFile = mediaFile;
     }
 
+    @Override
+    public void setStartServer(boolean startServer) {
+        this.startServer = startServer;
+        startServerNode.setTextContent(Boolean.toString(startServer));
+    }
+
+    @Override
+    public String getDialUri() {
+        return dialUri;
+    }
+
+    @Override
+    public void setDialUri(String dialUri) {
+        this.dialUri = dialUri;
+    }
 }

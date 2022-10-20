@@ -137,6 +137,21 @@ public class InitialRequestManager extends RequestManager
         
         headers.add(new SipHeaderFieldName(RFC3261.HDR_CSEQ),
                 new SipHeaderFieldValue(userAgent.generateCSeq(method)));
+
+        //Allow
+
+        headers.add(new SipHeaderFieldName(RFC3261.HDR_ALLOW),
+                new SipHeaderFieldValue(Utils.generateAllowHeader()));
+
+        //User Agent
+
+        headers.add(new SipHeaderFieldName(RFC3261.HDR_USER_AGENT),
+                new SipHeaderFieldValue(RFC3261.USER_AGENT));
+
+        //Content Length
+
+        headers.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_LENGTH),
+                new SipHeaderFieldValue("0"));
         
         return request;
     }
@@ -256,9 +271,13 @@ public class InitialRequestManager extends RequestManager
         //etc.
         
         if (sipResponse != null) {
+            String transport = RFC3261.TRANSPORT_UDP;
+            if (userAgent.getConfig().getDomain().contains(RFC3261.TRANSPORT_TCP)) {
+                transport = RFC3261.TRANSPORT_TCP;
+            }
             ServerTransaction serverTransaction =
                 transactionManager.createServerTransaction(
-                    sipResponse, userAgent.getSipPort(), RFC3261.TRANSPORT_UDP,
+                    sipResponse, userAgent.getSipPort(), transport,
                     this, sipRequest);
             serverTransaction.start();
             serverTransaction.receivedRequest(sipRequest);

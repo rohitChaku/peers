@@ -38,6 +38,9 @@ public class JavaConfig implements Config {
     private String mediaFile;
     private int rtpPort;
     private String authorizationUsername;
+    private boolean startServer;
+    private boolean microPhoneEnable;
+    private String dialUri;
 
     @Override
     public void save() {
@@ -90,12 +93,27 @@ public class JavaConfig implements Config {
     }
 
     @Override
+    public void setMicroPhoneEnable(boolean microPhoneEnable) {
+        this.microPhoneEnable = microPhoneEnable;
+    }
+
+    @Override
+    public boolean isMicroPhoneEnable() {
+        return microPhoneEnable;
+    }
+
+    @Override
     public int getRtpPort() {
         return rtpPort;
     }
 
     public String getAuthorizationUsername() {
         return authorizationUsername;
+    }
+
+    @Override
+    public boolean getStartServer() {
+        return startServer;
     }
 
     @Override
@@ -150,6 +168,22 @@ public class JavaConfig implements Config {
 
     public void setAuthorizationUsername(String authorizationUsername) {
         this.authorizationUsername = authorizationUsername;
+    }
+
+    @Override
+    public void setStartServer(boolean startServer) {
+        System.out.println(startServer);
+        this.startServer = startServer;
+    }
+
+    @Override
+    public String getDialUri() {
+        return dialUri;
+    }
+
+    @Override
+    public void setDialUri(String dialUri) {
+        this.dialUri = dialUri;
     }
 
     @Override

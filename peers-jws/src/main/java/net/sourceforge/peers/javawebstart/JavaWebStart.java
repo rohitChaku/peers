@@ -23,42 +23,74 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+import static net.sourceforge.peers.sip.Utils.DEFAULT_PEERS_HOME;
+import static net.sourceforge.peers.sip.Utils.PEERSHOME_SYSTEM_PROPERTY;
 
-import net.sourceforge.peers.gui.MainFrame;
+public class JavaWebStart {
 
-public class JavaWebStart extends MainFrame {
-    
-    public static void main(final String[] args) {
+    static class CloseProgramme extends Thread {
+        private long lastActiveTime;
+        private final long timeout;
 
-        String peersDir = ".peers";
-        String home = System.getProperty("user.home");
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-        String peersHome = home + File.separator + peersDir + File.separator
-            + format.format(new Date());
-        createDirectory(peersHome + File.separator + "conf");
-        createDirectory(peersHome + File.separator + "logs");
-        createDirectory(peersHome + File.separator + "media");
-        copyFile("conf/peers.xml", peersHome + File.separator + "conf"
-                + File.separator + "peers.xml");
-        copyFile("conf/peers.xsd", peersHome + File.separator + "conf"
-                + File.separator + "peers.xsd");
-        String peersPath = new File(peersHome).getAbsolutePath();
-        final String[] args2 = {peersPath};
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI(args2);
+        public CloseProgramme(long timeout) {
+            this.timeout = timeout;
+            this.active();
+        }
+
+        // call inside event loop to reset
+        public void active() {
+            this.lastActiveTime = System.currentTimeMillis();
+        }
+
+        @Override
+        public void run() {
+            while(true) {
+                if (System.currentTimeMillis() - lastActiveTime > this.timeout) {
+                    System.exit(0);
+                }
+
+                try {
+                    Thread.sleep(1000);
+                } catch(InterruptedException e) {
+                    System.exit(-1);
+                }
             }
-        });
+        }
     }
-    
-    private static void createAndShowGUI(String[] args) {
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        new MainFrame(args);
+
+    public static void main(final String[] args) {
+        CloseProgramme closeProgramme = new CloseProgramme(300_000L); // 5 minutes
+        closeProgramme.start();
+        String home = System.getProperty("user.home", DEFAULT_PEERS_HOME);
+        String peersDir = System.getProperty(PEERSHOME_SYSTEM_PROPERTY, null);
+        if (peersDir == null) {
+            peersDir = "peers";
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            String peersHome = home + File.separator + peersDir + File.separator
+                    + format.format(new Date());
+
+            createDirectory(peersHome + File.separator + "conf");
+            createDirectory(peersHome + File.separator + "logs");
+            createDirectory(peersHome + File.separator + "media");
+
+            copyFile("conf/peers.xml", peersHome + File.separator + "conf"
+                    + File.separator + "peers.xml");
+            copyFile("conf/peers.xsd", peersHome + File.separator + "conf"
+                    + File.separator + "peers.xsd");
+            String peersPath = new File(peersHome).getAbsolutePath();
+            final String[] args2 = {peersPath};
+            new RegisterSIPClient(args2);
+        } else {
+            // TODO: system property for multiple user agents
+            String peersPath = new File(peersDir).getAbsolutePath();
+            final String[] args2 = {peersPath};
+            new RegisterSIPClient(args2);
+        }
     }
     
     private static void createDirectory(String dir) {
@@ -67,27 +99,22 @@ public class JavaWebStart extends MainFrame {
             dirFile.mkdirs();
         }
     }
-    
+
     private static void copyFile(String source, String dest) {
-        ClassLoader classLoader = JavaWebStart.class.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(source);
-        try {
-            FileOutputStream out = new FileOutputStream(dest);
-            byte[] buf = new byte[256];
-            int readBytes;
-            while ((readBytes = inputStream.read(buf)) != -1) {
-                out.write(buf, 0, readBytes);
+        try (InputStream inputStream = Files.newInputStream(Paths.get(source))) {
+            try (FileOutputStream out = new FileOutputStream(dest)) {
+                byte[] buf = new byte[256];
+                int readBytes;
+                while ((readBytes = inputStream.read(buf)) != -1) {
+                    out.write(buf, 0, readBytes);
+                }
             }
-            out.close();
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
-
-
     }
     
     public JavaWebStart(String[] args) {
-        super(args);
     }
     
 }

@@ -45,6 +45,7 @@ public class XmlConfigTestNG {
         boolean mediaDebug = true;
         int rtpPort = 8002;
         String authorizationUsername = "authUser";
+        boolean startServer = Boolean.TRUE;
 
         config.setLocalInetAddress(localHost);
         config.setUserPart(userPart);
@@ -56,6 +57,7 @@ public class XmlConfigTestNG {
         config.setMediaDebug(mediaDebug);
         config.setRtpPort(rtpPort);
         config.setAuthorizationUsername(authorizationUsername);
+        config.setStartServer(startServer);
         config.save();
         config = new XmlConfig(fileName, logger);
         assert localHost.equals(config.getLocalInetAddress());
@@ -68,6 +70,7 @@ public class XmlConfigTestNG {
         assert mediaDebug == config.isMediaDebug();
         assert rtpPort == config.getRtpPort();
         assert authorizationUsername.equals(config.getAuthorizationUsername());
+        assert startServer == config.getStartServer();
     }
 
 }

@@ -53,8 +53,12 @@
       <xs:element name="outboundProxy" type="xs:string"/>
       <xs:element name="sipPort" type="portType"/>
       <xs:element name="rtpPort" type="portType"/>
+      <xs:element name="authorizationUsername" type="xs:string"/>
       <xs:element name="mediaMode" type="mediaModeType"/>
       <xs:element name="mediaDebug" type="xs:boolean"/>
+      <xs:element name="startServer" type="xs:boolean"/>
+      <xs:element name="microPhoneEnable" type="xs:boolean"/>
+      <xs:element name="dialUri" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 

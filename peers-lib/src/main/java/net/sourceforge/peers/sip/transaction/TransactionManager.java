@@ -20,10 +20,7 @@
 package net.sourceforge.peers.sip.transaction;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Timer;
+import java.util.*;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
@@ -43,16 +40,16 @@ public class TransactionManager {
 
     // TODO remove client transactions when they reach terminated state
     // TODO check that server transactions are removed in all transitions to terminated
-    private Hashtable<String, ClientTransaction> clientTransactions;
-    private Hashtable<String, ServerTransaction> serverTransactions;
+    private final HashMap<String, ClientTransaction> clientTransactions;
+    private final HashMap<String, ServerTransaction> serverTransactions;
 
     private TransportManager transportManager;
-    private Logger logger;
+    private final Logger logger;
     
     public TransactionManager(Logger logger) {
         this.logger = logger;
-        clientTransactions = new Hashtable<String, ClientTransaction>();
-        serverTransactions = new Hashtable<String, ServerTransaction>();
+        clientTransactions = new HashMap<String, ClientTransaction>();
+        serverTransactions = new HashMap<String, ServerTransaction>();
         timer = new Timer(TransactionManager.class.getSimpleName()
                 + " " + Timer.class.getSimpleName());
     }
@@ -78,8 +75,7 @@ public class TransactionManager {
                     inetAddress, port, transport, sipRequest, clientTransactionUser,
                     timer, transportManager, this, logger);
         }
-        clientTransactions.put(getTransactionId(branchId, method),
-                clientTransaction);
+        clientTransactions.put(getTransactionId(branchId, method), clientTransaction);
         return clientTransaction;
     }
 
@@ -87,6 +83,7 @@ public class TransactionManager {
             int port, String transport,
             ServerTransactionUser serverTransactionUser,
             SipRequest sipRequest) {
+        System.out.println("transport: " + transport);
         SipHeaderFieldValue via = Utils.getTopVia(sipResponse);
         String branchId = via.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_BRANCH));
@@ -96,6 +93,7 @@ public class TransactionManager {
         ServerTransaction serverTransaction;
         // TODO create server transport user and pass it to server transaction
         if (RFC3261.METHOD_INVITE.equals(method)) {
+            System.out.println("if invite");
             serverTransaction = new InviteServerTransaction(branchId, port,
                     transport, sipResponse, serverTransactionUser, sipRequest,
                     timer, this, transportManager, logger);

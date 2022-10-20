@@ -24,19 +24,19 @@
        network interfaces, or several addresses on a specific interface,
        you can specify an address to bind on here. -->
   <!-- Example: 192.168.1.20 -->
-  <ipAddress></ipAddress>
+  <ipAddress/>
   <!-- username (corresponding to the user part of your sip uri) -->
   <!-- Example: alice -->
-  <userPart></userPart>
+  <userPart>1</userPart>
   <!-- domain (corresponding to the domain part of your sip uri) -->
   <!-- Example: atlanta.com -->
-  <domain></domain>
+  <domain>0.0.0.0</domain>
   <!-- if password is empty, no REGISTER message is sent -->
   <!-- Example: 1234 -->
-  <password></password>
+  <password/>
   <!-- you can specify an outbound proxy for registration and calls -->
   <!-- Example: sip:192.168.1.20;lr -->
-  <outboundProxy></outboundProxy>
+  <outboundProxy/>
   <!-- you can specify the sip listening port you want, 0 can be used to
        choose a random free port -->
   <!-- Example: 5060 -->
@@ -46,7 +46,7 @@
   <rtpPort>0</rtpPort>
   <!-- if you need to specify an authorization username different than
        the userPart, if empty will default to what is specified in userPart -->
-  <authorizationUsername></authorizationUsername>
+  <authorizationUsername/>
   <!-- mediaMode corresponds to the way media is managed. Three values are
        possible for this parameter:
          - captureAndPlayback: capture sound from microphone, send
@@ -61,4 +61,7 @@
        contain raw data at input and output of microphone, encoder, rtp
        sender, rtp receiver, and speaker. -->
   <mediaDebug>false</mediaDebug>
+  <startServer>false</startServer>
+  <microPhoneEnable>false</microPhoneEnable>
+  <dialUri/>
 </peers>
